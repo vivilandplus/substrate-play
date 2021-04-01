@@ -1,3 +1,5 @@
+#[warn(dead_code)]
+
 use crate as pallet_template;
 use sp_core::H256;
 use frame_support::parameter_types;
@@ -53,9 +55,4 @@ impl system::Config for Test {
 
 impl pallet_template::Config for Test {
 	type Event = Event;
-}
-
-// Build genesis storage according to the mock runtime.
-pub fn new_test_ext() -> sp_io::TestExternalities {
-	system::GenesisConfig::default().build_storage::<Test>().unwrap().into()
 }

@@ -31,11 +31,15 @@ decl_storage! {
 // Pallets use events to inform users when important changes are made.
 // https://substrate.dev/docs/en/knowledgebase/runtime/events
 decl_event!(
-	pub enum Event<T> where AccountId = <T as frame_system::Config>::AccountId {
+	pub enum Event<T> where
+		AccountId = <T as frame_system::Config>::AccountId,
+		DestAccountId = <T as frame_system::Config>::AccountId {
 		// 声明事件
 		ClaimCreated(AccountId, Vec<u8>),
 		// 吊销存证事件
 		ClaimRevoked(AccountId, Vec<u8>),
+		// 转移存证事件
+		TransferClaim(AccountId, Vec<u8>, DestAccountId),
 	}
 );
 
@@ -84,6 +88,19 @@ decl_module! {
 			Proofs::<T>::remove(&claim);
 			// 触发移除存证事件
 			Self::deposit_event(RawEvent::ClaimRevoked(sender, claim));
+		}
+		#[weight = 10_0000]
+		fn transfer_claim(origin, claim: Vec<u8>, dest: T::AccountId) {
+			let sender = ensure_signed(origin)?;
+			ensure!(Proofs::<T>::contains_key(&claim), Error::<T>::NoSuchProof);
+			// 获取声明所有者
+			let (owner, _block_number) = Proofs::<T>::get(&claim);
+			// 确保当前调用者是声明所有者
+			ensure!(sender == owner, Error::<T>::NotProofOwner);
+			// 转移存证
+			Proofs::<T>::insert(&claim, (dest, frame_system::Pallet::<T>::block_number()));
+			// 触发转移存证事件
+			// Self::deposit_event(RawEvent::TransferClaim(sender, claim, dest));
 		}
 	}
 }
