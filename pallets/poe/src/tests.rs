@@ -1,11 +1,11 @@
-use crate::{Error, mock::*};
-use frame_support::{assert_ok, assert_noop};
 use super::*;
+use crate::{mock::*, Error};
+use frame_support::{assert_noop, assert_ok};
 
 #[test]
 fn create_claim_works() {
 	new_test_ext().execute_with(|| {
-		let claim: Vec<u8> = vec![0,1];
+		let claim: Vec<u8> = vec![0, 1];
 		assert_ok!(PoeModule::create_claim(Origin::signed(1), claim.clone()));
 		assert_eq!(
 			Proofs::<Test>::get(&claim),
