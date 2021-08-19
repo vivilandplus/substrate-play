@@ -10,6 +10,8 @@ use sp_std::vec::Vec;
 
 #[cfg(test)]
 mod mock;
+#[cfg(test)]
+mod tests;
 
 /// Configure the pallet by specifying the parameters and types on which it depends.
 pub trait Config: frame_system::Config {
